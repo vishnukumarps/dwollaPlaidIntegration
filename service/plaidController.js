@@ -1,5 +1,5 @@
 const { Configuration, PlaidApi,PlaidEnvironments,ProcessorTokenCreateRequest } = require('plaid');
-const { Tokens } = require("../model/tokens")
+
 
 
 const PLAID_CLIENT_ID = '62a30605787ab8001324575d';
@@ -56,7 +56,6 @@ const client = new PlaidApi(configuration);
 
 
 const publicAcessTokenRequest = async (req, res) => {
-  const tokens = new Tokens()
   const publicTokenRequest = {
     institution_id: 'ins_4',
     initial_products: ['transactions']
@@ -70,7 +69,7 @@ const publicAcessTokenRequest = async (req, res) => {
     const publicToken = publicTokenResponse.data.public_token;
     // The generated public_token can now be exchanged
     // for an access_token
-    tokens.publicToken = publicTokenResponse.data.public_token
+   
 
     const exchangeRequest = {
       public_token: publicToken,
@@ -79,7 +78,6 @@ const publicAcessTokenRequest = async (req, res) => {
       exchangeRequest,
     );
     const accessToken = exchangeTokenResponse.data.access_token;
-    tokens.accessToken = exchangeTokenResponse.data.access_token;
     // console.log(exchangeTokenResponse)
 
     const request = {
@@ -87,9 +85,8 @@ const publicAcessTokenRequest = async (req, res) => {
     };
     const response = await client.accountsGet(request);
     const accounts = response.data.accounts;
-    tokens.accounts = response.data.accounts;
+
     console.log(accounts)
-    tokens.save()
 
     res.send(`accessToken:${accessToken}`)
   }
@@ -103,9 +100,6 @@ const publicAcessTokenRequest = async (req, res) => {
 
 
 const processorTokenRequest = async (req, res) => {
-
-  // const tokens = new Tokens()
-
 
   const publicTokenRequest = {
     institution_id: 'ins_1',
@@ -122,7 +116,6 @@ const processorTokenRequest = async (req, res) => {
     const publicToken = publicTokenResponse.data.public_token;
     // The generated public_token can now be exchanged
     // for an access_token
-    // tokens.publicToken =publicTokenResponse.data.public_token
 
 
 

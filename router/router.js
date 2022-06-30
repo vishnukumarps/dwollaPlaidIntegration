@@ -7,7 +7,7 @@ const {createCustomer,createTransfer,addingBankAndMakingAuth}=require("../contol
 
 routerDwolla.post('/createCustomer',createCustomer)
 // routerDwolla.post('/addingCustBankDetails',addingCustBankDetails)
-routerDwolla.post('/makingBankAuth',addingBankAndMakingAuth)
+routerDwolla.post('/addingBankAndMakingAuth',addingBankAndMakingAuth)
 routerDwolla.post('/createTransfer',createTransfer)
 
 // routerDwolla.post('/createLinkTokenNew',createLinkTokenNew)

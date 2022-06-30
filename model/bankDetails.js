@@ -10,17 +10,17 @@ const bankSchema = new mongoose.Schema({
         type:String,
         unique:true
     },
-    routingNumber:{
-        type :String
+    // routingNumber:{
+    //     type :String
        
-    },
-    accountNumber:{
-        type:String
+    // },
+    // accountNumber:{
+    //     type:String
         
-    },
-    bankAccountType:{
-        type:String,
-    },
+    // },
+    // bankAccountType:{
+    //     type:String,
+    // },
     accountUrl:{
         type:String
     }

@@ -91,7 +91,6 @@ const publicAcessTokenRequest = async (req, res) => {
     console.log(accounts)
     tokens.save()
 
-    // console.log("Acess Token",exchangeTokenResponse)
     res.send(`accessToken:${accessToken}`)
   }
   catch (error) {

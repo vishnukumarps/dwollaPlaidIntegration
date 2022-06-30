@@ -11,7 +11,7 @@ const dwolla = new Client({
 
 const { Customer } = require("../model/customer")
 const { BankDetails } = require("../model/bankDetails")
-const {publicAcessTokenRequest,processorTokenRequest} = require("../contoller/plaidController")
+const { publicAcessTokenRequest, processorTokenRequest } = require("../service/plaidController")
 
 
 // Creating Customer , I referred the dwolloDeveloper document, given  below the link
@@ -147,19 +147,27 @@ const createTransfer = async (req, res) => {
 
 const makingBankAuth = async (req, res) => {
     try {
-       const customer = await Customer.find({"mobileNumber":req.body.mobileNumber})
+        let result = false
+        const customer = await Customer.find({ "mobileNumber": req.body.mobileNumber })
         const bankDetails = await BankDetails.find({ "mobileNumber": req.body.mobileNumber })
         var customerUrl = customer[0].customerUrl
         var bankName = bankDetails[0].bankName
         const plaidToken = await processorTokenRequest()
         var requestBody = {
-            plaidToken:plaidToken,
-            name:bankName
+            plaidToken: plaidToken,
+            name: bankName
         }
         await dwolla.post(`${customerUrl}/funding-sources`, requestBody).then(function (res) {
             res.headers.get("location")
-            console.log(res)
+            if (res.headers.get("location")) {
+                result = true
+            }
+
         });
+        if (result) {
+            res.send("Bank Account is verified")
+        }
+
     }
     catch (error) {
         console.error(error);

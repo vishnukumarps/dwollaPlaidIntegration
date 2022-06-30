@@ -2,7 +2,7 @@ const express = require('express')
 const routerDwolla =express.Router()
 
 const {createCustomer,addingCustBankDetails,createTransfer,makingBankAuth}=require("../contoller/dwollaController")
-// const {publicAcessTokenRequest,processorTokenRequest} = require("../contoller/plaidController")
+// const {publicAcessTokenRequest,processorTokenRequest} = require("../service/plaidController")
 
 
 routerDwolla.post('/createCustomer',createCustomer)

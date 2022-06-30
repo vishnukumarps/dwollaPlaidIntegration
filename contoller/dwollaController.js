@@ -11,7 +11,7 @@ const dwolla = new Client({
 
 const { Customer } = require("../model/customer")
 const { BankDetails } = require("../model/bankDetails")
-const { publicAcessTokenRequest, processorTokenRequest } = require("../service/plaidController")
+const { processorTokenRequest } = require("../service/plaidController")
 
 
 // Creating Customer , I referred the dwolloDeveloper document, given  below the link
@@ -109,7 +109,7 @@ const addingBankAndMakingAuth = async (req, res) => {
         var bankDetailsAdded = false
         const customer = await Customer.find({ "mobileNumber": req.body.mobileNumber })
         var customerUrl = customer[0].customerUrl
-        const plaidToken = await processorTokenRequest()
+        const plaidToken = await processorTokenRequest(req.body.institution_id, req.body.initial_products)
         var requestBody = {
             plaidToken: plaidToken,
             name: req.body.bankName
@@ -123,7 +123,7 @@ const addingBankAndMakingAuth = async (req, res) => {
             }
 
         });
-        if(bankDetailsAdded) {
+        if (bankDetailsAdded) {
             res.send("bank Details added and verified")
         }
 

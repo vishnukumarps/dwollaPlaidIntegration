@@ -1,4 +1,4 @@
-const { Configuration, PlaidApi,PlaidEnvironments,ProcessorTokenCreateRequest } = require('plaid');
+const { Configuration, PlaidApi, PlaidEnvironments, ProcessorTokenCreateRequest } = require('plaid');
 
 
 
@@ -55,55 +55,58 @@ const client = new PlaidApi(configuration);
 
 
 
-const publicAcessTokenRequest = async (req, res) => {
+// const publicAcessTokenRequest = async (req, res) => {
+//   const publicTokenRequest = {
+//     institution_id: 'ins_4',
+//     initial_products: ['transactions']
+//   };
+//   try {
+
+//     const publicTokenResponse = await client.sandboxPublicTokenCreate(
+//       publicTokenRequest
+//     );
+//     // console.log("PublicToken",publicTokenResponse.data.public_token)
+//     const publicToken = publicTokenResponse.data.public_token;
+//     // The generated public_token can now be exchanged
+//     // for an access_token
+
+
+//     const exchangeRequest = {
+//       public_token: publicToken,
+//     };
+//     const exchangeTokenResponse = await client.itemPublicTokenExchange(
+//       exchangeRequest,
+//     );
+//     const accessToken = exchangeTokenResponse.data.access_token;
+//     // console.log(exchangeTokenResponse)
+
+//     const request = {
+//       access_token: accessToken,
+//     };
+//     const response = await client.accountsGet(request);
+//     const accounts = response.data.accounts;
+
+//     console.log(accounts)
+
+//     res.send(`accessToken:${accessToken}`)
+//   }
+//   catch (error) {
+//     console.log(error)
+//   }
+// }
+
+
+
+
+
+const processorTokenRequest = async (institution_id, initial_products, req, res) => {
+  console.log(institution_id, initial_products)
+
   const publicTokenRequest = {
-    institution_id: 'ins_4',
-    initial_products: ['transactions']
-  };
-  try {
-
-    const publicTokenResponse = await client.sandboxPublicTokenCreate(
-      publicTokenRequest
-    );
-    // console.log("PublicToken",publicTokenResponse.data.public_token)
-    const publicToken = publicTokenResponse.data.public_token;
-    // The generated public_token can now be exchanged
-    // for an access_token
-   
-
-    const exchangeRequest = {
-      public_token: publicToken,
-    };
-    const exchangeTokenResponse = await client.itemPublicTokenExchange(
-      exchangeRequest,
-    );
-    const accessToken = exchangeTokenResponse.data.access_token;
-    // console.log(exchangeTokenResponse)
-
-    const request = {
-      access_token: accessToken,
-    };
-    const response = await client.accountsGet(request);
-    const accounts = response.data.accounts;
-
-    console.log(accounts)
-
-    res.send(`accessToken:${accessToken}`)
-  }
-  catch (error) {
-    console.log(error)
-  }
-}
-
-
-
-
-
-const processorTokenRequest = async (req, res) => {
-
-  const publicTokenRequest = {
-    institution_id: 'ins_1',
-    initial_products: ['transactions']
+    // institution_id: 'ins_1',
+    // initial_products: ['transactions']
+    institution_id: institution_id,
+    initial_products: initial_products
   };
 
 
@@ -151,6 +154,7 @@ const processorTokenRequest = async (req, res) => {
     return processorToken
 
     // res.send(`processorToken:${processorToken}`)
+
   }
   catch (error) {
     console.log(error)
@@ -169,6 +173,6 @@ const processorTokenRequest = async (req, res) => {
 
 module.exports = {
   // createLinkTokenNew,
-  publicAcessTokenRequest,
+  // publicAcessTokenRequest,
   processorTokenRequest
 }

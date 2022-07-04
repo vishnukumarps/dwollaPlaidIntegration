@@ -10,7 +10,7 @@ const dwolla = new Client({
 
 
 const { Customer } = require("../model/customer")
-const { BankDetails } = require("../model/bankDetails")
+const { BankDetails } = require("../model/Account")
 const { processorTokenRequest } = require("../service/plaidController")
 
 

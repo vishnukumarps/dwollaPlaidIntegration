@@ -28,7 +28,11 @@ con.on('open', function () {
 
 
 
+
 const routerDwolla = require("./router/router")
+const routerPlaid=require("./router/plaidRouter")
+
+app.use('/plaid',routerPlaid)
 app.use('/dwolla',routerDwolla)
 
 

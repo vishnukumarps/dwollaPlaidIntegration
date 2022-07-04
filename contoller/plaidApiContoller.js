@@ -53,11 +53,9 @@ const createPublicToken = async ( req, res) => {
 
 const createAccessToken = async ( req, res) => {
   const tokens = await Token.findOne({ "mobileNumber": req.body.mobileNumber })
-  console.log(tokens)
-
   try {
     const exchangeRequest = {
-      public_token: tokens.publicTokens,
+      public_token: tokens.publicTokens
     };
     const exchangeTokenResponse = await client.itemPublicTokenExchange(
       exchangeRequest,
@@ -65,6 +63,7 @@ const createAccessToken = async ( req, res) => {
     const accessToken = exchangeTokenResponse.data.access_token;
     tokens.accessTokens = accessToken
     await tokens.save()
+    res.send(`aceesToken: ${accessToken}`)
   }
   catch (error) {
     console.log(error)

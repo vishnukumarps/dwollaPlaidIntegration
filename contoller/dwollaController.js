@@ -11,7 +11,11 @@ const dwolla = new Client({
 
 const { Customer } = require("../model/customer")
 const { BankDetails } = require("../model/Account")
-const { processorTokenRequest } = require("../service/plaidController")
+const {Token} = require("../model/Token")
+
+
+
+// const { processorTokenRequest } = require("../service/plaidController")
 
 
 // Creating Customer , I referred the dwolloDeveloper document, given  below the link
@@ -58,6 +62,11 @@ const createCustomer = async (req, res) => {
 
 // for adding bankAccountDetails , I referred the dwollo Developer document, given  below the link
 //https://developers.dwolla.com/guides/send-money/add-funding-source
+//
+
+
+//     Adding Bank details -Using Only Dwolla
+
 
 // const addingCustBankDetails = async (req, res) => {
 //     const bankDetails = new BankDetails(req.body)
@@ -95,36 +104,74 @@ const createCustomer = async (req, res) => {
 
 
 
-//// for creating Transaction , I referred the dwollo Developer document, given  below the link
-//https://developers.dwolla.com/guides/send-money/create-transfer
+
+
+///  Verifying Bank Account using dwolla + plaid
+
+
+// const addingBankAndMakingAuth = async (req, res) => {
+//     try {
+//         const bankDetails = new BankDetails(req.body)
+//         var bankDetailsAdded = false
+//         const customer = await Customer.find({ "mobileNumber": req.body.mobileNumber })
+//         var customerUrl = customer[0].customerUrl
+//         const plaidToken = await processorTokenRequest(req.body.institution_id, req.body.initial_products)
+//         var requestBody = {
+//             plaidToken: plaidToken,
+//             name: req.body.bankName
+//         }
+//         await dwolla.post(`${customerUrl}/funding-sources`, requestBody).then(function (res) {
+//             res.headers.get("location")
+//             if (res.status === 201) {
+//                 bankDetails.accountUrl = res.headers.get("location")
+//                 bankDetails.save()
+//                 bankDetailsAdded = true
+//             }
+
+//         });
+//         if (bankDetailsAdded) {
+//             res.send("bank Details added and verified")
+//         }
+
+//     }
+//     catch (error) {
+//         console.error(error);
+//         res.send("error occured");
+//     }
+// }
 
 
 
 
 
+///   Another method
 
 const addingBankAndMakingAuth = async (req, res) => {
     try {
-        const bankDetails = new BankDetails(req.body)
-        var bankDetailsAdded = false
-        const customer = await Customer.find({ "mobileNumber": req.body.mobileNumber })
-        var customerUrl = customer[0].customerUrl
-        const plaidToken = await processorTokenRequest(req.body.institution_id, req.body.initial_products)
-        var requestBody = {
-            plaidToken: plaidToken,
+        const bankVerified = false
+        const customer = await Customer.findOne({ "mobileNumber": req.body.mobileNumber })
+        const tokens = await Token.findOne({ "mobileNumber": req.body.mobileNumber })
+        const processorToken =tokens.processorToken
+        const customerUrl = customer.customerUrl
+        customer.bankName=req.body.bankName
+       
+
+
+        const requestBody = {
+            plaidToken: processorToken,
             name: req.body.bankName
         }
         await dwolla.post(`${customerUrl}/funding-sources`, requestBody).then(function (res) {
             res.headers.get("location")
             if (res.status === 201) {
-                bankDetails.accountUrl = res.headers.get("location")
-                bankDetails.save()
-                bankDetailsAdded = true
+                customer.accountUrl = res.headers.get("location")
+                customer.save()
+                console.log(res.headers.get("location"))
+                bankVerified =true
             }
-
         });
-        if (bankDetailsAdded) {
-            res.send("bank Details added and verified")
+        if(bankVerified){
+            res.send("Bank account is verified")
         }
 
     }
@@ -135,6 +182,12 @@ const addingBankAndMakingAuth = async (req, res) => {
 }
 
 
+
+
+
+
+//// for creating Transaction , I referred the dwollo Developer document, given  below the link
+//https://developers.dwolla.com/guides/send-money/create-transfer
 
 
 

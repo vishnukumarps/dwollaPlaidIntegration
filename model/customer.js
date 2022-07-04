@@ -47,12 +47,12 @@ const customerSchema = new mongoose.Schema({
     customerUrl:{
         type:String
     },
-    tokens:[{
-        token:{
-            type:String,
-            required:true
-        }
-    }]
+    accountUrl:{
+        type:String 
+    },
+    bankName:{
+        type:String 
+    }
 
 })
 

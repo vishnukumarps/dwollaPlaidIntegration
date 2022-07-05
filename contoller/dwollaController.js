@@ -108,44 +108,6 @@ const createCustomer = async (req, res) => {
 
 ///  Verifying Bank Account using dwolla + plaid
 
-
-// const addingBankAndMakingAuth = async (req, res) => {
-//     try {
-//         const bankDetails = new BankDetails(req.body)
-//         var bankDetailsAdded = false
-//         const customer = await Customer.find({ "mobileNumber": req.body.mobileNumber })
-//         var customerUrl = customer[0].customerUrl
-//         const plaidToken = await processorTokenRequest(req.body.institution_id, req.body.initial_products)
-//         var requestBody = {
-//             plaidToken: plaidToken,
-//             name: req.body.bankName
-//         }
-//         await dwolla.post(`${customerUrl}/funding-sources`, requestBody).then(function (res) {
-//             res.headers.get("location")
-//             if (res.status === 201) {
-//                 bankDetails.accountUrl = res.headers.get("location")
-//                 bankDetails.save()
-//                 bankDetailsAdded = true
-//             }
-
-//         });
-//         if (bankDetailsAdded) {
-//             res.send("bank Details added and verified")
-//         }
-
-//     }
-//     catch (error) {
-//         console.error(error);
-//         res.send("error occured");
-//     }
-// }
-
-
-
-
-
-///   Another method
-
 const addingBankAndMakingAuth = async (req, res) => {
     try {
         const bankVerified = false

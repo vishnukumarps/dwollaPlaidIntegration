@@ -17,26 +17,26 @@ const configuration = new Configuration({
 })
 const client = new PlaidApi(configuration);
 
-const {Token} = require("../model/Token")
-const {Account} = require("../model/Account")
+const { Token } = require("../model/Token")
+const { Account } = require("../model/Account")
 
 
 
-const createPublicToken = async ( req, res) => {
+const createPublicToken = async (req, res) => {
   const publicTokenRequest = {
     // institution_id: 'ins_1',
     // initial_products: ['transactions']
     institution_id: req.body.institution_id,
     initial_products: req.body.initial_products
   };
-  const token= new Token()
+  const token = new Token()
   try {
 
     const publicTokenResponse = await client.sandboxPublicTokenCreate(
       publicTokenRequest
     );
     const publicToken = publicTokenResponse.data.public_token;
-    token.mobileNumber=req.body.mobileNumber
+    token.mobileNumber = req.body.mobileNumber
     token.publicTokens = publicToken
     token.save()
     res.send(`publicToken:${publicToken}`)
@@ -47,11 +47,11 @@ const createPublicToken = async ( req, res) => {
     res.send(error)
   }
 
- 
+
 }
 
 
-const createAccessToken = async ( req, res) => {
+const createAccessToken = async (req, res) => {
   const tokens = await Token.findOne({ "mobileNumber": req.body.mobileNumber })
   try {
     const exchangeRequest = {
@@ -68,32 +68,32 @@ const createAccessToken = async ( req, res) => {
   catch (error) {
     console.log(error)
     res.send(error)
-  } 
+  }
 }
 
 
-const choosingAccountIdforProcessorToken = async ( req, res) => {
-  const account= new Account(req.body)
+const choosingAccountIdforProcessorToken = async (req, res) => {
+  const account = new Account(req.body)
   const tokens = await Token.findOne({ "mobileNumber": req.body.mobileNumber })
   const request1 = {
     access_token: tokens.accessTokens
   };
-  
+
   try {
     const response = await client.accountsGet(request1);
     const accounts = response.data.accounts;
-    account.accounts=accounts
+    account.accounts = accounts
     account.save()
     res.send(accounts)
   }
   catch (error) {
     console.log(error)
     res.send(error)
-  } 
+  }
 }
 
 
-const createProcessorToken = async ( req, res) => {
+const createProcessorToken = async (req, res) => {
   const tokens = await Token.findOne({ "mobileNumber": req.body.mobileNumber })
   const account = await Account.findOne({ "mobileNumber": req.body.mobileNumber })
   try {
@@ -108,16 +108,56 @@ const createProcessorToken = async ( req, res) => {
       request,
     );
     const processorToken = processorTokenResponse.data.processor_token;
-    tokens.processorToken=processorToken
+    tokens.processorToken = processorToken
     tokens.save()
-   
+
 
     res.send(`processorToken:${processorToken}`)
   }
   catch (error) {
     console.log(error)
     res.send(error)
-  } 
+  }
+}
+
+
+
+
+// Pull real-time balance information for each account associated
+// with the Item
+const accountBalance = async (req, res) => {
+  const tokens = await Token.findOne({ "mobileNumber": req.body.mobileNumber })
+  const request = {
+    access_token: tokens.accessTokens,
+  };
+  try {
+    const response = await client.accountsBalanceGet(request);
+    const accounts = response.data.accounts;
+    res.send(accounts)
+  }
+  catch (error) {
+    console.log(error)
+    res.send(error)
+  }
+}
+
+
+
+const institutionsGetRequest = async (req, res) => {
+  const request = {
+    count: 100,
+    offset: 0,
+    country_codes: ['US'],
+  };
+  try {
+    const response = await client.institutionsGet(request);
+    const institutions = response.data.institutions;
+    res.send(institutions)
+  }
+  catch (error) {
+    console.log(error)
+    res.send(error)
+  }
 }
 
 
@@ -126,5 +166,7 @@ module.exports = {
   createPublicToken,
   createAccessToken,
   choosingAccountIdforProcessorToken,
-  createProcessorToken
+  createProcessorToken,
+  accountBalance,
+  institutionsGetRequest
 }

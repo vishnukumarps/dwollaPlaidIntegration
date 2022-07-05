@@ -10,7 +10,6 @@ const dwolla = new Client({
 
 
 const { Customer } = require("../model/customer")
-const { BankDetails } = require("../model/Account")
 const {Token} = require("../model/Token")
 
 
@@ -110,7 +109,7 @@ const createCustomer = async (req, res) => {
 
 const addingBankAndMakingAuth = async (req, res) => {
     try {
-        const bankVerified = false
+        let bankVerified = false
         const customer = await Customer.findOne({ "mobileNumber": req.body.mobileNumber })
         const tokens = await Token.findOne({ "mobileNumber": req.body.mobileNumber })
         const processorToken =tokens.processorToken
@@ -155,13 +154,13 @@ const addingBankAndMakingAuth = async (req, res) => {
 
 const createTransfer = async (req, res) => {
     try {
-        const Recievingcustomer = await BankDetails.find({ "mobileNumber": req.body.mobileNumber })
+        const Recievingcustomer = await Customer.findOne({ "mobileNumber": req.body.mobileNumber })
 
         var currency = req.body.currency
         var amount = req.body.amount
         let transferDone = false
 
-        var RecCustomerAcntUrl = Recievingcustomer[0].accountUrl
+        var RecCustomerAcntUrl = Recievingcustomer.accountUrl
 
         var transferRequest = {
             _links: {

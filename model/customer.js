@@ -50,6 +50,9 @@ const customerSchema = new mongoose.Schema({
     accountUrl:{
         type:String 
     },
+    transferUrl:{
+        type:String 
+    },
     bankName:{
         type:String 
     }

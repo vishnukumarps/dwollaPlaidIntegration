@@ -182,8 +182,8 @@ const createTransfer = async (req, res) => {
             if (res.status == 201) {
                 transferDone = true
             }
-
-            console.log(res.headers.get("location"))
+            console.log("res",res)
+            // console.log(res.headers.get("location"))
         })
 
         if (transferDone) {
@@ -197,9 +197,83 @@ const createTransfer = async (req, res) => {
 }
 
 
+const createTransferBetweenCustomer = async (req, res) => {
+    try {
+        const Sendingcustomer = await Customer.findOne({ "mobileNumber": req.body.sendCusNumber })
+        const Recievingcustomer = await Customer.findOne({ "mobileNumber": req.body.recdCusNumber })
+
+        var currency = req.body.currency
+        var amount = req.body.amount
+        let transferDone = false
+        var SendCustomerAcntUrl = Sendingcustomer.accountUrl
+        var RecCustomerAcntUrl = Recievingcustomer.accountUrl
+
+
+        var transferRequest = {
+            _links: {
+                source: {
+                    href: SendCustomerAcntUrl
+                },
+                destination: {
+                    href: RecCustomerAcntUrl,
+                },
+            },
+            amount: {
+                currency: currency,
+                value: amount
+            },
+        };
+
+        await dwolla.post("transfers", transferRequest).then(function (res) {
+            res.headers.get("location");
+            Sendingcustomer.transferUrl=res.headers.get("location");
+            Sendingcustomer.save()
+            if (res.status == 201) {
+                transferDone = true
+            }
+            console.log("res",res)
+            // console.log(res.headers.get("location"))
+        })
+
+        if (transferDone) {
+            res.send("money is transfered")
+        }
+    }
+    catch (error) {
+        console.error(error);
+        res.send("money is not transfered, error occured")
+    }
+}
+
+const statusOfYourTransfer = async (req, res) => {
+    try {
+        var status=""
+        const Sendingcustomer = await Customer.findOne({ "mobileNumber": req.body.sendCusNumber })
+        var transferUrl =Sendingcustomer.transferUrl
+
+        await dwolla.get(transferUrl).then((res) => {
+            res.body.status
+            status =res.body.status
+            console.log(status)
+        });
+        res.send(`status:${status}`)
+        
+        // For Dwolla API applications, an dwolla can be used for this endpoint. (https://developers.dwolla.com/api-reference/authorization/application-authorization)
+        // => 'pending'
+    }
+    catch (error) {
+        console.error(error);
+        res.send(error)
+    }
+}
+
+
+
 module.exports = {
     createCustomer,
     // addingCustBankDetails,
     createTransfer,
-    addingBankAndMakingAuth
+    addingBankAndMakingAuth,
+    createTransferBetweenCustomer,
+    statusOfYourTransfer
 }

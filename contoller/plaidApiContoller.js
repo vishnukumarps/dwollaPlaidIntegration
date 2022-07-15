@@ -53,6 +53,7 @@ const createPublicToken = async (req, res) => {
 
 const createAccessToken = async (req, res) => {
   const tokens = await Token.findOne({ "mobileNumber": req.body.mobileNumber })
+  console.log("hii", tokens.publicTokens)
   try {
     const exchangeRequest = {
       public_token: tokens.publicTokens
@@ -110,7 +111,6 @@ const createProcessorToken = async (req, res) => {
     const processorToken = processorTokenResponse.data.processor_token;
     tokens.processorToken = processorToken
     tokens.save()
-
 
     res.send(`processorToken:${processorToken}`)
   }

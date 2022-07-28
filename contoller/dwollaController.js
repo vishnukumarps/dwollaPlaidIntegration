@@ -10,7 +10,7 @@ const dwolla = new Client({
 
 
 const { Customer } = require("../model/customer")
-const {Token} = require("../model/Token")
+const { Token } = require("../model/Token")
 
 
 
@@ -112,10 +112,10 @@ const addingBankAndMakingAuth = async (req, res) => {
         let bankVerified = false
         const customer = await Customer.findOne({ "mobileNumber": req.body.mobileNumber })
         const tokens = await Token.findOne({ "mobileNumber": req.body.mobileNumber })
-        const processorToken =tokens.processorToken
+        const processorToken = tokens.processorToken
         const customerUrl = customer.customerUrl
-        customer.bankName=req.body.bankName
-       
+        customer.bankName = req.body.bankName
+
 
 
         const requestBody = {
@@ -128,10 +128,10 @@ const addingBankAndMakingAuth = async (req, res) => {
                 customer.accountUrl = res.headers.get("location")
                 customer.save()
                 console.log(res.headers.get("location"))
-                bankVerified =true
+                bankVerified = true
             }
         });
-        if(bankVerified){
+        if (bankVerified) {
             res.send("Bank account is verified")
         }
 
@@ -182,7 +182,7 @@ const createTransfer = async (req, res) => {
             if (res.status == 201) {
                 transferDone = true
             }
-            console.log("res",res)
+            console.log("res", res)
             // console.log(res.headers.get("location"))
         })
 
@@ -226,12 +226,12 @@ const createTransferBetweenCustomer = async (req, res) => {
 
         await dwolla.post("transfers", transferRequest).then(function (res) {
             res.headers.get("location");
-            Sendingcustomer.transferUrl=res.headers.get("location");
+            Sendingcustomer.transferUrl = res.headers.get("location");
             Sendingcustomer.save()
             if (res.status == 201) {
                 transferDone = true
             }
-            console.log("res",res)
+            console.log("res", res)
             // console.log(res.headers.get("location"))
         })
 
@@ -247,17 +247,18 @@ const createTransferBetweenCustomer = async (req, res) => {
 
 const statusOfYourTransfer = async (req, res) => {
     try {
-        var status=""
+
+        var status = ""
         const Sendingcustomer = await Customer.findOne({ "mobileNumber": req.body.sendCusNumber })
-        var transferUrl =Sendingcustomer.transferUrl
+        var transferUrl = Sendingcustomer.transferUrl
 
         await dwolla.get(transferUrl).then((res) => {
             res.body.status
-            status =res.body.status
+            status = res.body.status
             console.log(status)
         });
         res.send(`status:${status}`)
-        
+
         // For Dwolla API applications, an dwolla can be used for this endpoint. (https://developers.dwolla.com/api-reference/authorization/application-authorization)
         // => 'pending'
     }
@@ -268,6 +269,48 @@ const statusOfYourTransfer = async (req, res) => {
 }
 
 
+const createWebhookSubscription = async (req, res) => {
+    try {
+        var webhookUrl = ""
+        var requestBody = {
+            url: "https://nodenewhost.herokuapp.com/dwolla/dwollawebhook",
+            secret: "123456Sfq",
+        };
+        await dwolla.post("webhook-subscriptions", requestBody)
+            .then((res) => {
+                res.headers.get("location")
+                console.log(res.headers.get("location"))
+                webhookUrl = res.headers.get("location")
+            });
+        res.send(`webhookSubscriptionUrl:${webhookUrl}`)
+    }
+    catch (error) {
+        console.error(error);
+        res.send(error)
+    }
+}
+
+
+const retrieveAwebhookSubscription = async (req, res) => {
+    try {
+        var created=""
+        var webhookSubscriptionUrl = req.body.webhookUrl;
+
+        await dwolla.get(webhookSubscriptionUrl).then((res) => {
+            res.body.created
+            console.log(res.body.created)
+            created=res.body.created
+        });
+        res.send(`created:${created}`)
+    }
+    catch (error) {
+        console.error(error);
+        res.send(error)
+    }
+}
+
+
+
 
 module.exports = {
     createCustomer,
@@ -275,5 +318,7 @@ module.exports = {
     createTransfer,
     addingBankAndMakingAuth,
     createTransferBetweenCustomer,
-    statusOfYourTransfer
+    statusOfYourTransfer,
+    createWebhookSubscription,
+    retrieveAwebhookSubscription
 }

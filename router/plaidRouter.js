@@ -6,7 +6,8 @@ const { createPublicToken,
     choosingAccountIdforProcessorToken,
     createProcessorToken,
     accountBalance,
-    institutionsGetRequest } = require("../contoller/plaidApiContoller")
+    institutionsGetRequest,
+    authGetRequest } = require("../contoller/plaidApiContoller")
 
 
 
@@ -16,6 +17,7 @@ routerPlaid.post('/choosingAccountIdforProcessorToken', choosingAccountIdforProc
 routerPlaid.post('/createProcessorToken', createProcessorToken)
 routerPlaid.post('/accountBalance',accountBalance)
 routerPlaid.post('/institutionsGetRequest',institutionsGetRequest)
+routerPlaid.post('/authGetRequest',authGetRequest)
 
 
 

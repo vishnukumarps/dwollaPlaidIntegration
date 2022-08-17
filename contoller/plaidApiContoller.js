@@ -145,7 +145,7 @@ const accountBalance = async (req, res) => {
 
 const institutionsGetRequest = async (req, res) => {
   const request = {
-    count: 100,
+    count: 500,
     offset: 0,
     country_codes: ['US'],
   };
@@ -161,6 +161,29 @@ const institutionsGetRequest = async (req, res) => {
 }
 
 
+const  authGetRequest = async(req, res)=> {
+  const tokens = await Token.findOne({ "mobileNumber": req.body.mobileNumber })
+  const request = {
+    access_token: tokens.accessTokens
+  };
+  
+  try {
+    const response = await client.authGet(request);
+    const accountData = response.data.accounts;
+    const numbers = response.data.numbers;
+    res.send(`accountDatas:${accountData} , numberss:${numbers}`)
+    console.log("accountData:",accountData)
+    console.log("numbers:",numbers)
+  } 
+  catch (error) {
+    console.log(error)
+    res.send(error)
+  }
+}
+
+
+
+
 
 module.exports = {
   createPublicToken,
@@ -168,5 +191,6 @@ module.exports = {
   choosingAccountIdforProcessorToken,
   createProcessorToken,
   accountBalance,
-  institutionsGetRequest
+  institutionsGetRequest,
+  authGetRequest
 }
